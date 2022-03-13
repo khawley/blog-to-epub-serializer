@@ -1,0 +1,4 @@
+images/*
+!images/README.md
+soups/*
+!soups/README.md
