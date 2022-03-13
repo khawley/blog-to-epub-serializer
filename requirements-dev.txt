@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# development
+black==22.1.0

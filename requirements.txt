@@ -1,0 +1,4 @@
+EbookLib==0.17.1
+beautifulsoup4==4.10.0
+pillow==9.0.1
+requests==2.27.1
