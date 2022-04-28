@@ -16,6 +16,7 @@ class Chapter:
     image_paths: Optional[List[str]] = None
     echapter: Optional[epub.EpubHtml] = None
     eimgs: Optional[List[epub.EpubItem]] = None
+    no_title_header: bool = False
 
     def __post_init__(self):
         """
@@ -52,7 +53,10 @@ class Chapter:
         Adds title to the beginning of the html, and then the html content
         """
         ch = epub.EpubHtml(title=self.title, file_name=self.xhtml)
-        ch.content = f"<h1>{self.title}</h1>{self.html_content}"
+        if self.no_title_header:
+            ch.content = f"<div>{self.html_content}</div>"
+        else:
+            ch.content = f"<h1>{self.title}</h1>{self.html_content}"
         self.echapter = ch
 
     def _create_eimg(self, image_path: str) -> None:
