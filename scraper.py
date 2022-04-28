@@ -1,4 +1,5 @@
 import os
+from logging import getLogger
 from typing import Dict, Optional
 
 import requests
@@ -6,6 +7,8 @@ from bs4 import BeautifulSoup
 from ebooklib import epub
 
 from book_utils import Chapter, Book
+
+logger = getLogger("__main__")
 
 
 class Scraper:
@@ -27,13 +30,20 @@ class Scraper:
         self.cover_img_path = cover_img_path
 
     def run(self, use_cache: bool = True):
-
         chapters = []
         for key, url in self.blog_map.items():
-            if not use_cache:
+            soup = None
+            if use_cache:
+                try:
+                    soup = self.read_soup_from_file(key)
+                except FileNotFoundError:
+                    # if local file not found, then look for
+                    logger.warning(
+                        f"Could not find a file for {key}, fetching from web"
+                    )
+                    pass
+            if not use_cache or not soup:
                 soup = self.fetch_page(url, key)
-            else:
-                soup = self.read_soup_from_file(key)
             chapter = self.parse_chapter_text(soup, key)
             chapters.append(chapter)
 
