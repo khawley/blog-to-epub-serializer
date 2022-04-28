@@ -1,3 +1,7 @@
+"""
+This scraper pulls Sea of the Wind, Shore of the Maze - the second
+Twelve Kingdoms novel translated by https://tu-shu-guan.blogspot.com/
+"""
 from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
@@ -6,9 +10,9 @@ from book_utils import Chapter
 from scraper import Scraper
 
 
-class TwelveKingdomsScraper(Scraper):
-    IMAGES_DIR = "images/twelvekingdoms"
-    SOUP_DIR = "soups/twelvekingdoms"
+class SeaOftheWindScraper(Scraper):
+    IMAGES_DIR = "images/seaofthewind"
+    SOUP_DIR = "soups/seaofthewind"
 
     # override parent functions
     def parse_chapter_text(
@@ -242,11 +246,11 @@ blog_map: Dict[float, str] = {
 title = "Sea of the Wind, Shore of the Maze"
 author = "Fuyumi Ono"
 epub_name = f"{title} - {author}.epub"
-cover_img_path = TwelveKingdomsScraper.fetch_and_save_img(
+cover_img_path = SeaOftheWindScraper.fetch_and_save_img(
     "https://lh6.googleusercontent.com/_4ORonPYBrqQ/Tb-vcZrNy0I/AAAAAAAAAGQ/tDmNk4bolyk/s800/jkcover02a.jpg"
 )
 
-scraper = TwelveKingdomsScraper(
+scraper = SeaOftheWindScraper(
     title=title,
     author=author,
     cover_img_path=cover_img_path,
