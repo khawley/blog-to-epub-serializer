@@ -17,14 +17,17 @@ class InnkeeperScraper(Scraper):
         chapter_title = article.h1.text
         chapter_content = article.find(class_="entry-content")
 
-        img_block = chapter_content.find(class_="wp-block-image")
-        local_src = ""
-        if img_block:
+        img_blocks = chapter_content.findAll(class_="wp-block-image")
+        local_srcs = []
+        for img_block in img_blocks:
             if img_block.find("noscript"):
                 img_block.find("noscript").replace_with("")
             img = img_block.find("img")
-            local_src = self.fetch_and_save_img(img.attrs["data-src"])
+            local_src = self.fetch_and_save_img(
+                img.attrs["data-src"], chapter_idx
+            )
             img.attrs["src"] = local_src
+            local_srcs.append(local_src)
 
         # ignore the Typo box
         ignore_typo_div = "wp-block-genesis-blocks-gb-container"
@@ -34,7 +37,7 @@ class InnkeeperScraper(Scraper):
             idx=chapter_idx,
             title=chapter_title,
             html_content=chapter_content,
-            image_path=local_src,
+            image_paths=local_srcs,
         )
 
 

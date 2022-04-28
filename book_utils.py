@@ -12,14 +12,16 @@ class Chapter:
     idx: float
     title: str
     html_content: BeautifulSoup
-    image_path: Optional[str] = None
+    image_paths: Optional[List[str]] = None
     echapter: Optional[epub.EpubHtml] = None
-    eimg: Optional[epub.EpubItem] = None
+    eimgs: Optional[List[epub.EpubItem]] = None
 
     def __post_init__(self):
         self._create_echapter()
-        if self.image_path:
-            self._create_eimg()
+        self.eimgs = []
+        if self.image_paths:
+            for image_path in self.image_paths:
+                self._create_eimg(image_path)
 
     @property
     def xhtml(self) -> str:
@@ -34,22 +36,24 @@ class Chapter:
         ch.content = f"<h1>{self.title}</h1>{self.html_content}"
         self.echapter = ch
 
-    def _create_eimg(self) -> None:
-        raw_img = Image.open(self.image_path)
+    def _create_eimg(self, image_path: str) -> None:
+        raw_img = Image.open(image_path)
         b = io.BytesIO()
         raw_img.save(b, "jpeg")
         bin_img = b.getvalue()
 
         uid = (
-            self.image_path.split("/")[0].split(".")[0]
-            if "/" in self.image_path
-            else self.image_path.split(".")[0]
+            image_path.split("/")[0].split(".")[0]
+            if "/" in image_path
+            else image_path.split(".")[0]
         )
-        self.eimg = epub.EpubItem(
-            uid=uid,
-            file_name=self.image_path,
-            media_type="image/jpeg",
-            content=bin_img,
+        self.eimgs.append(
+            epub.EpubItem(
+                uid=uid,
+                file_name=image_path,
+                media_type="image/jpeg",
+                content=bin_img,
+            )
         )
 
 
@@ -111,5 +115,5 @@ class Book:
         self.ebook.spine.append(chapter.echapter)
         self.ebook.toc.append(chapter.echapter)
 
-        if chapter.eimg:
-            self.ebook.add_item(chapter.eimg)
+        for ch_eimg in chapter.eimgs:
+            self.ebook.add_item(ch_eimg)
