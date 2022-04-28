@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
@@ -10,6 +10,7 @@ class TwelveKingdomsScraper(Scraper):
     IMAGES_DIR = "images/twelvekingdoms"
     SOUP_DIR = "soups/twelvekingdoms"
 
+    # override parent functions
     def parse_chapter_text(
         self, soup: BeautifulSoup, chapter_idx: float
     ) -> Chapter:
@@ -64,6 +65,154 @@ class TwelveKingdomsScraper(Scraper):
             image_paths=local_srcs,
         )
 
+    def add_preface_chapters(self) -> Optional[List[Chapter]]:
+        copyright_ = self.add_copyright()
+        maps = self.add_maps()
+        return [copyright_, maps]
+
+    # new methods just for this class
+    def add_copyright(self) -> Optional[Chapter]:
+        cover_2 = self.fetch_and_save_img(
+            "https://lh6.googleusercontent.com/_4ORonPYBrqQ/Tb-vb19znYI/AAAAAAAAAGM/8UIPeIt4WUA/s800/jkcover02b.jpg"
+        )
+        local_srcs = [cover_2]
+        style = """
+        <style>
+                html, body, div, p {
+                    font-size: 100%;
+                }
+                h1 {
+                    font-size: x-large;
+                    font-weight: bold;
+                    font-style: italic;
+                    text-align: center;
+                    line-height: 1.4em;
+                    margin-bottom: 1.5em;
+                    margin-top: 0;
+                    padding: 0;
+                }
+                div.bktitle {
+                    text-align: center;
+                    margin-bottom: 6pt;
+                }
+                div.bkauthor {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: large;
+                    margin-bottom: 2em;
+                }
+                div.copy {
+                    text-align: justify;
+                    font-size: small;
+                    line-height: 1.4em;
+                    margin-left: 2em;
+                    margin-right: 2em;
+                    margin-bottom: 1em;
+                }
+                a:link {
+                    COLOR: #0000AA;
+                    text-decoration: none;
+                }
+                a:visited {
+                    COLOR: #0000A0;
+                    text-decoration: none;
+                }
+                a:hover {
+                    COLOR: #A00000;
+                    background-color: transparent;
+                    text-decoration: none;
+                    border-bottom: 1px solid;
+                }
+                a.home:link {
+                    COLOR: #0000AA;
+                    text-decoration: none;
+                    border-bottom: 1px solid;
+                }
+                a.home:visited {
+                    COLOR: #0000A0;
+                    text-decoration: none;
+                    border-bottom: 1px solid;
+                }
+                a.home:hover {
+                    COLOR: #A00000;
+                    background-color: transparent;
+                    text-decoration: none;
+                    border-bottom: 1px solid;
+                }
+            </style>
+        """
+        chapter_content = f"""
+        <html>
+        <head>
+            {style}
+        </head>
+        <body>
+        <div>
+            <h1>Sea of the Wind, <br />
+              Shore of the Maze</h1>
+            <div class="bktitle">
+                A Twelve Kingdoms novel
+            </div>
+            <div class="bktitle">
+                by
+            </div>
+            <div class="bkauthor">
+                Fuyumi Ono
+            </div>
+            <div class="copy">
+                Copyright &copy; 1993 as 風の海 迷宮の岸 (<i>Kaze no Umi Meikyuu
+                no Kishi</i>) by Fuyumi Ono. Translated by Mina. The numbers at
+                the beginning of each chapter reflect the original part/chapter
+                numbering in the Kodansha Paperbacks edition
+                (ISBN: 978-4-06-255114-4/978-4-06-255120-5).<br />
+            <br />
+            Visit <a class="home" href="https://tu-shu-guan.blogspot.com">
+            tu-shu-guan.blogspot.com</a> for the source version and more
+            information about the Twelve Kingdoms series.
+          </div>
+        </div>
+        <div>
+            <h2>Cover of Volume 2</h2>
+            <img src="{cover_2}" alt="Cover2"/>
+        </div>
+        </body>
+        </html>
+        """
+        return Chapter(
+            idx=0.1,
+            title="Preface",
+            html_content=chapter_content,
+            image_paths=local_srcs,
+        )
+
+    def add_maps(self) -> Chapter:
+        kingdoms_map = self.fetch_and_save_img(
+            "https://lh6.googleusercontent.com/_4ORonPYBrqQ/Tb-gZsRUaRI/AAAAAAAAAFk/tBYfZP-ijaA/s800/12kmap.jpg"
+        )
+        yellowsea_map = self.fetch_and_save_img(
+            "https://lh3.googleusercontent.com/_4ORonPYBrqQ/Tb-vQ8vsOLI/AAAAAAAAAFo/cIW1R7ZqpDw/s800/kkmap.jpg"
+        )
+        local_srcs = [kingdoms_map, yellowsea_map]
+        chapter_content = f"""
+                <?xml version='1.0' encoding='utf-8'?>
+                <!DOCTYPE html>
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="en" xml:lang="en">
+                  <body>
+                  <div>
+                    <img src="{kingdoms_map}" alt="Twelve Kingdoms Map"/>
+                  </div>
+                  <div>
+                    <img src="{yellowsea_map}" alt="Yellow Sea Map"/>
+                  </div>
+                 </body>
+                </html>"""
+        return Chapter(
+            idx=0.2,
+            title="Maps",
+            html_content=chapter_content,
+            image_paths=local_srcs,
+        )
+
 
 dont_skip_headers_chapters = [0.5, 6.5, 14.0, 15.0, 16.0]
 
@@ -90,8 +239,10 @@ blog_map: Dict[float, str] = {
 
 title = "Sea of the Wind, Shore of the Maze"
 author = "Fuyumi Ono"
-cover_img_path = "images/twelvekingdoms/cover1.jpg"
 epub_name = f"{title} - {author}.epub"
+cover_img_path = TwelveKingdomsScraper.fetch_and_save_img(
+    "https://lh6.googleusercontent.com/_4ORonPYBrqQ/Tb-vcZrNy0I/AAAAAAAAAGQ/tDmNk4bolyk/s800/jkcover02a.jpg"
+)
 
 scraper = TwelveKingdomsScraper(
     title=title,
