@@ -38,13 +38,27 @@ class Scraper:
         epub_name: str,
         cover_img_path: Optional[str] = None,
     ):
+        # used in the epub metadata
         self.title = title
+        # used in the epub metadata
         self.author = author
+
+        # dictionary of chapter numbers (float) to html paths
         self.blog_map = blog_map
+        # the local file name that will be created
         self.epub_name = epub_name
+
+        # this should be the local path of the image
         self.cover_img_path = cover_img_path
 
-    def run(self, use_cache: bool = True):
+    def run(self, use_cache: bool = True) -> None:
+        """
+        Start the scraper. Will grab all html + image files, then process and
+        save them into an epub.
+
+        :param use_cache: whether to pull everything fresh from the internet
+            or use locally downloaded files
+        """
         chapters = []
         preface_chapters = self.add_preface_chapters()
         if preface_chapters:
@@ -85,12 +99,25 @@ class Scraper:
         cls,
         key: float,
     ) -> BeautifulSoup:
+        """
+        Given the chapter key, fetch the saved html
+
+        :param key: the chapter number page to retrieve
+        :return: html/beautifulsoup loaded page
+        """
         with open(f"{cls.SOUP_DIR}/soup_{key}.html", "r") as f:
             soup = BeautifulSoup(f.read(), "html.parser")
         return soup
 
     @classmethod
     def fetch_page(cls, url: str, key: float) -> BeautifulSoup:
+        """
+        Fetch the page from url and save to the SOUP_DIR
+
+        :param url: the blog page that contains the chapter to ingest
+        :param key: the chapter number this page represents
+        :return: html/beautifulsoup loaded page
+        """
         # confirm the directory exists, creating any intermediates required
         if not os.path.exists(cls.SOUP_DIR):
             os.makedirs(cls.SOUP_DIR)
@@ -105,16 +132,34 @@ class Scraper:
     def parse_chapter_text(
         self, soup: BeautifulSoup, chapter_idx: float
     ) -> Chapter:
+        """
+        Method to parse the beautiful soup and edit its contents.  Should
+        also save any desired images to local storage
+        (use self.fetch_and_save_img)
+
+        :param soup: the html soup to parse and edit
+        :param chapter_idx: the chapter number this soup represents
+        :return: the Chapter ready to be added to the Book
+        """
         raise NotImplementedError()
 
     def add_preface_chapters(self) -> Optional[List[Chapter]]:
         """
-        An optional method to add image based chapters to the book.
+        An optional method to add chapters to the beginning of the book.
+        The implementor is responsible for creating or parsing html.
         Should be implemented in subclasses and return a Chapter
         """
 
     @classmethod
     def fetch_and_save_img(cls, src: str, key: Optional[float] = None) -> str:
+        """
+        Given an image url, download and save the file to local storage.
+
+        :param src: url source of the image to be downloaded and saved
+        :param key: the chapter this image relates to. (this is used to prevent
+            multiple images sharing the same name across different chapters)
+        :return: the local path the image was downloaded to
+        """
         # determine the full directory path, if supplied a key
         directory = cls.IMAGES_DIR
         if key:
