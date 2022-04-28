@@ -70,7 +70,8 @@ class TwelveKingdomsScraper(Scraper):
         return [copyright_]
 
     # new methods just for this class
-    def add_copyright(self) -> Optional[Chapter]:
+    @staticmethod
+    def add_copyright() -> Optional[Chapter]:
         style = """
         <style>
                 html, body, div, p {
