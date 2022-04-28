@@ -18,6 +18,10 @@ class Chapter:
     eimgs: Optional[List[epub.EpubItem]] = None
 
     def __post_init__(self):
+        """
+        Runs after the initializer.  Will create the chapter itself to be
+        used in the Book
+        """
         self._create_echapter()
         self.eimgs = []
         if self.image_paths:
@@ -26,18 +30,38 @@ class Chapter:
 
     @property
     def xhtml(self) -> str:
-        return f"{self.ch_idx }.html"
+        """
+        The full html file name for this chapter
+
+        :return: formatted string
+        """
+        return f"{self.ch_idx}.html"
 
     @property
     def ch_idx(self) -> str:
+        """
+        Prepend 'ch_' and the zero padded chapter idx.  To be used when naming
+        the epub internal files.
+
+        :return: formatted string
+        """
         return f"ch_{self.idx:02}"
 
     def _create_echapter(self) -> None:
+        """
+        Adds title to the beginning of the html, and then the html content
+        """
         ch = epub.EpubHtml(title=self.title, file_name=self.xhtml)
         ch.content = f"<h1>{self.title}</h1>{self.html_content}"
         self.echapter = ch
 
     def _create_eimg(self, image_path: str) -> None:
+        """
+        Creates the ebook version of an image by loading it into binary, then
+        appends an epub image to the attributes list.
+
+        :param image_path:  the local path to the image
+        """
         raw_img = Image.open(image_path)
         b = io.BytesIO()
         raw_img.save(b, "jpeg")
@@ -67,13 +91,21 @@ class Book:
     chapters: Optional[List[Chapter]] = None
     ebook: Optional[epub.EpubBook] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        """
+        Runs after the initializer.  Will create the bones of the book
+        and add all the chapters.
+        """
         self._create_ebook()
         if self.chapters:
             for chapter in self.chapters:
                 self._add_chapter_to_ebook(chapter)
 
-    def _create_ebook(self):
+    def _create_ebook(self) -> None:
+        """
+        Sets up the basic metadata of the book. Including the title, author
+        and cover. It also creates an empty (to be filled) table of contents.
+        """
         ebook = epub.EpubBook()
         ebook.set_title(self.title)
         ebook.set_language(self.language)
@@ -106,12 +138,26 @@ class Book:
         self.ebook.add_item(nav_css)
 
     def add_chapter(self, chapter: Chapter) -> None:
+        """
+        Should be used to add chapters to Book, instead of touching the
+        attribute directly. This will properly add the chapter to the ebook.
+        It will always be added after all the previous chapters in the list.
+
+        :param chapter: The chapter to be added
+        """
         if not self.chapters:
             self.chapters = []
         self.chapters.append(chapter)
         self._add_chapter_to_ebook(chapter)
 
     def _add_chapter_to_ebook(self, chapter: Chapter) -> None:
+        """
+        Private method, this adds the chapter directly to the ebook and does
+        not manipulate the attribute list.  It also adds any images from the
+        chapter to the ebook.
+
+        :param chapter: The chapter to be added
+        """
         self.ebook.add_item(chapter.echapter)
         self.ebook.spine.append(chapter.echapter)
         self.ebook.toc.append(chapter.echapter)
