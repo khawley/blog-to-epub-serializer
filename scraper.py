@@ -83,10 +83,24 @@ class Scraper:
         raise NotImplementedError()
 
     @classmethod
-    def fetch_and_save_img(cls, src: str) -> str:
+    def fetch_and_save_img(cls, src: str, key: Optional[float] = None) -> str:
+        # determine the full directory path, if supplied a key
+        directory = cls.IMAGES_DIR
+        if key:
+            directory = f"{directory}/{key}"
+
+        # confirm the directory exists, creating any intermediates required
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         filename = src.split("/")[-1]
-        full_file_path = f"{cls.IMAGES_DIR}/{filename}"
+        full_file_path = f"{directory}/{filename}"
+        # if a file does not already exist at the name designated
+        # - download and store it
         if not os.path.isfile(full_file_path):
+            logger.info(
+                f"Could not find file {full_file_path}. Fetching from web."
+            )
             file = requests.get(src)
             with open(full_file_path, "wb") as f:
                 f.write(file.content)
