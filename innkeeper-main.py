@@ -7,6 +7,9 @@ from scraper import Scraper
 
 
 class InnkeeperScraper(Scraper):
+    IMAGES_DIR = "images/innkeeper"
+    SOUP_DIR = "soups/innkeeper"
+
     def parse_chapter_text(
         self, soup: BeautifulSoup, chapter_idx: float
     ) -> Chapter:
@@ -57,7 +60,7 @@ blog_map: Dict[float, str] = {
 
 title = "Innkeeper Chronicles - Sweep of the Heart"
 author = "Ilona Andrews"
-cover_img_path = "images/A-dahl-cover-art-chop.jpg"
+cover_img_path = "images/innkeeper/A-dahl-cover-art-chop.jpg"
 epub_name = "Sweep of the Heart.epub"
 
 scraper = InnkeeperScraper(
