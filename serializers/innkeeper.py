@@ -3,12 +3,12 @@ from typing import Dict
 from bs4 import BeautifulSoup
 
 from blog_to_epub_serializer.book_utils import Chapter
-from blog_to_epub_serializer.scraper import Scraper
+from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
 
 
 class InnkeeperScraper(Scraper):
-    IMAGES_DIR = "images/innkeeper"
-    SOUP_DIR = "soups/innkeeper"
+    IMAGES_DIR = f"{REPO_BASE}/local_cache/images/innkeeper"
+    SOUP_DIR = f"{REPO_BASE}/local_cache/soups/innkeeper"
 
     def parse_chapter_text(
         self, soup: BeautifulSoup, chapter_idx: float
@@ -63,7 +63,9 @@ blog_map: Dict[float, str] = {
 
 title = "Innkeeper Chronicles - Sweep of the Heart"
 author = "Ilona Andrews"
-cover_img_path = "images/innkeeper/A-dahl-cover-art-chop.jpg"
+cover_img_path = (
+    f"{REPO_BASE}/local_cache/images/innkeeper/A-dahl-cover-art-chop.jpg"
+)
 epub_name = "Sweep of the Heart.epub"
 
 scraper = InnkeeperScraper(

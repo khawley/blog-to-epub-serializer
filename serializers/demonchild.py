@@ -3,12 +3,12 @@ from typing import Dict, List, Optional
 from bs4 import BeautifulSoup
 
 from blog_to_epub_serializer.book_utils import Chapter
-from blog_to_epub_serializer.scraper import Scraper
+from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
 
 
 class TwelveKingdomsScraper(Scraper):
-    IMAGES_DIR = "images/demonchild"
-    SOUP_DIR = "soups/demonchild"
+    IMAGES_DIR = f"{REPO_BASE}/local_cache/images/demonchild"
+    SOUP_DIR = f"{REPO_BASE}/local_cache/soups/demonchild"
 
     # override parent functions
     def parse_chapter_text(

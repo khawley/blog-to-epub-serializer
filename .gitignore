@@ -1,4 +1,4 @@
-images/*
-!images/README.md
-soups/*
-!soups/README.md
+local_cache/images/*
+!local_cache/images/README.md
+local_cache/soups/*
+!local_cache/soups/README.md

@@ -7,12 +7,12 @@ from typing import Dict, List, Optional
 from bs4 import BeautifulSoup
 
 from blog_to_epub_serializer.book_utils import Chapter
-from blog_to_epub_serializer.scraper import Scraper
+from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
 
 
 class SeaOftheWindScraper(Scraper):
-    IMAGES_DIR = "images/seaofthewind"
-    SOUP_DIR = "soups/seaofthewind"
+    IMAGES_DIR = f"{REPO_BASE}/local_cache/images/seaofthewind"
+    SOUP_DIR = f"{REPO_BASE}/local_cache/soups/seaofthewind"
 
     # override parent functions
     def parse_chapter_text(

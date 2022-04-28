@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import requests
@@ -25,10 +26,13 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
+REPO_BASE = Path(__file__).resolve().parent.parent
+
 
 class Scraper:
-    IMAGES_DIR = "../images"
-    SOUP_DIR = "../soups"
+    # directories in relation to repo base
+    IMAGES_DIR = f"{REPO_BASE}/local_cache/images"
+    SOUP_DIR = f"{REPO_BASE}/local_cache/soups"
 
     def __init__(
         self,
