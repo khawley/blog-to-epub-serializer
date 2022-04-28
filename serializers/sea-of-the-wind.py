@@ -11,8 +11,7 @@ from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
 
 
 class SeaOftheWindScraper(Scraper):
-    IMAGES_DIR = f"{REPO_BASE}/local_cache/images/seaofthewind"
-    SOUP_DIR = f"{REPO_BASE}/local_cache/soups/seaofthewind"
+    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache/seaofthewind"
 
     # override parent functions
     def parse_chapter_text(

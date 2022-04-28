@@ -7,8 +7,7 @@ from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
 
 
 class TwelveKingdomsScraper(Scraper):
-    IMAGES_DIR = f"{REPO_BASE}/local_cache/images/demonchild"
-    SOUP_DIR = f"{REPO_BASE}/local_cache/soups/demonchild"
+    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache/demonchild"
 
     # override parent functions
     def parse_chapter_text(

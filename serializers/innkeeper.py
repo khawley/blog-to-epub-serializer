@@ -7,8 +7,7 @@ from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
 
 
 class InnkeeperScraper(Scraper):
-    IMAGES_DIR = f"{REPO_BASE}/local_cache/images/innkeeper"
-    SOUP_DIR = f"{REPO_BASE}/local_cache/soups/innkeeper"
+    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache/innkeeper"
 
     def parse_chapter_text(
         self, soup: BeautifulSoup, chapter_idx: float

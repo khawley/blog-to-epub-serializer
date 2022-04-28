@@ -31,8 +31,7 @@ REPO_BASE = Path(__file__).resolve().parent.parent
 
 class Scraper:
     # directories in relation to repo base
-    IMAGES_DIR = f"{REPO_BASE}/local_cache/images"
-    SOUP_DIR = f"{REPO_BASE}/local_cache/soups"
+    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache"
 
     def __init__(
         self,
@@ -109,7 +108,7 @@ class Scraper:
         :param key: the chapter number page to retrieve
         :return: html/beautifulsoup loaded page
         """
-        with open(f"{cls.SOUP_DIR}/soup_{key}.html", "r") as f:
+        with open(f"{cls.LOCAL_CACHE_DIR}/soup_{key}.html", "r") as f:
             soup = BeautifulSoup(f.read(), "html.parser")
         return soup
 
@@ -123,12 +122,12 @@ class Scraper:
         :return: html/beautifulsoup loaded page
         """
         # confirm the directory exists, creating any intermediates required
-        if not os.path.exists(cls.SOUP_DIR):
-            os.makedirs(cls.SOUP_DIR)
-            logger.info(f"Created directory path {cls.SOUP_DIR}")
+        if not os.path.exists(cls.LOCAL_CACHE_DIR):
+            os.makedirs(cls.LOCAL_CACHE_DIR)
+            logger.info(f"Created directory path {cls.LOCAL_CACHE_DIR}")
 
         response = requests.get(url)
-        with open(f"{cls.SOUP_DIR}/soup_{key}.html", "w") as f:
+        with open(f"{cls.LOCAL_CACHE_DIR}/soup_{key}.html", "w") as f:
             f.write(response.text)
 
         return BeautifulSoup(response.text, "html.parser")
@@ -165,7 +164,7 @@ class Scraper:
         :return: the local path the image was downloaded to
         """
         # determine the full directory path, if supplied a key
-        directory = cls.IMAGES_DIR
+        directory = cls.LOCAL_CACHE_DIR
         if key:
             directory = f"{directory}/{key}"
 
