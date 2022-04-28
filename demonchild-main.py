@@ -70,8 +70,7 @@ class TwelveKingdomsScraper(Scraper):
         return [copyright_]
 
     # new methods just for this class
-    @staticmethod
-    def add_copyright() -> Optional[Chapter]:
+    def add_copyright(self) -> Optional[Chapter]:
         style = """
         <style>
                 html, body, div, p {
@@ -138,13 +137,9 @@ class TwelveKingdomsScraper(Scraper):
             </style>
         """
         chapter_content = f"""
-        <html>
-        <head>
-            {style}
-        </head>
-        <body>
+        {style}
         <div>
-            <h1>Demon Child</h1>
+            <h1>{self.title}</h1>
             <div class="bktitle">
                 A Twelve Kingdoms related novel
             </div>
@@ -152,11 +147,11 @@ class TwelveKingdomsScraper(Scraper):
                 by
             </div>
             <div class="bkauthor">
-                Fuyumi Ono
+                {self.author}
             </div>
             <div class="copy">
                 Copyright &copy; 1991 as 魔性の子 (<i>Mashou no Ko</i>)
-                by Fuyumi Ono. Translated by Mina. The numbers at
+                by {self.author}. Translated by Mina. The numbers at
                 the beginning of each chapter reflect the original part/chapter
                 numbering in the Kodansha Paperbacks edition
                 (ISBN: 978-4-10-124021-3).<br />
@@ -166,13 +161,12 @@ class TwelveKingdomsScraper(Scraper):
             information about the Twelve Kingdoms series.
           </div>
         </div>
-        </body>
-        </html>
         """
         return Chapter(
             idx=0.1,
-            title="",
+            title="Copyright",
             html_content=chapter_content,
+            no_title_header=True,
         )
 
 
