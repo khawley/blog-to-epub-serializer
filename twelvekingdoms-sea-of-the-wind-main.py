@@ -66,16 +66,32 @@ class TwelveKingdomsScraper(Scraper):
         )
 
     def add_preface_chapters(self) -> Optional[List[Chapter]]:
+        alt_cover = self.add_alt_cover()
         copyright_ = self.add_copyright()
         maps = self.add_maps()
-        return [copyright_, maps]
+        return [alt_cover, copyright_, maps]
 
-    # new methods just for this class
-    def add_copyright(self) -> Optional[Chapter]:
+    def add_alt_cover(self) -> Chapter:
         cover_2 = self.fetch_and_save_img(
             "https://lh6.googleusercontent.com/_4ORonPYBrqQ/Tb-vb19znYI/AAAAAAAAAGM/8UIPeIt4WUA/s800/jkcover02b.jpg"
         )
         local_srcs = [cover_2]
+        chapter_content = f"""
+        <div>
+            <h2>Cover of Volume 2</h2>
+            <img src="{cover_2}" alt="Cover2"/>
+        </div>
+        """
+        return Chapter(
+            idx=0.1,
+            title="Alt Cover",
+            html_content=chapter_content,
+            image_paths=local_srcs,
+            no_title_header=True,
+        )
+
+    # new methods just for this class
+    def add_copyright(self) -> Chapter:
         style = """
         <style>
                 html, body, div, p {
@@ -142,11 +158,7 @@ class TwelveKingdomsScraper(Scraper):
             </style>
         """
         chapter_content = f"""
-        <html>
-        <head>
-            {style}
-        </head>
-        <body>
+        {style}
         <div>
             <h1>Sea of the Wind, <br />
               Shore of the Maze</h1>
@@ -157,11 +169,11 @@ class TwelveKingdomsScraper(Scraper):
                 by
             </div>
             <div class="bkauthor">
-                Fuyumi Ono
+                {self.author}
             </div>
             <div class="copy">
                 Copyright &copy; 1993 as 風の海 迷宮の岸 (<i>Kaze no Umi Meikyuu
-                no Kishi</i>) by Fuyumi Ono. Translated by Mina. The numbers at
+                no Kishi</i>) by {self.author}. Translated by Mina. The numbers at
                 the beginning of each chapter reflect the original part/chapter
                 numbering in the Kodansha Paperbacks edition
                 (ISBN: 978-4-06-255114-4/978-4-06-255120-5).<br />
@@ -171,18 +183,12 @@ class TwelveKingdomsScraper(Scraper):
             information about the Twelve Kingdoms series.
           </div>
         </div>
-        <div>
-            <h2>Cover of Volume 2</h2>
-            <img src="{cover_2}" alt="Cover2"/>
-        </div>
-        </body>
-        </html>
         """
         return Chapter(
-            idx=0.1,
-            title="Preface",
+            idx=0.2,
+            title="Copyright",
             html_content=chapter_content,
-            image_paths=local_srcs,
+            no_title_header=True,
         )
 
     def add_maps(self) -> Chapter:
@@ -194,23 +200,19 @@ class TwelveKingdomsScraper(Scraper):
         )
         local_srcs = [kingdoms_map, yellowsea_map]
         chapter_content = f"""
-                <?xml version='1.0' encoding='utf-8'?>
-                <!DOCTYPE html>
-                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#" lang="en" xml:lang="en">
-                  <body>
-                  <div>
-                    <img src="{kingdoms_map}" alt="Twelve Kingdoms Map"/>
-                  </div>
-                  <div>
-                    <img src="{yellowsea_map}" alt="Yellow Sea Map"/>
-                  </div>
-                 </body>
-                </html>"""
+        <div>
+            <img src="{kingdoms_map}" alt="Twelve Kingdoms Map"/>
+        </div>
+        <div>
+          <img src="{yellowsea_map}" alt="Yellow Sea Map"/>
+        </div>
+        """
         return Chapter(
-            idx=0.2,
+            idx=0.3,
             title="Maps",
             html_content=chapter_content,
             image_paths=local_srcs,
+            no_title_header=True,
         )
 
 
