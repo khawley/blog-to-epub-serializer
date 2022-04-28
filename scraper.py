@@ -1,7 +1,7 @@
 import io
 import os
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -10,22 +10,6 @@ from PIL import Image
 
 IMAGES_DIR = "images"
 SOUP_DIR = "soups"
-
-
-blog_map: Dict[float, str] = {
-    1.0: "https://www.ilona-andrews.com/2021/happy-holidays-4/",
-    2.0: "https://www.ilona-andrews.com/2021/chapter-2/",
-    3.0: "https://www.ilona-andrews.com/2022/chapter-3/",
-    4.0: "https://www.ilona-andrews.com/2022/chapter-4-part-1/",
-    4.5: "https://www.ilona-andrews.com/2022/chapter-4-part-2/",
-    5.0: "https://www.ilona-andrews.com/2022/chapter-5/",
-    6.0: "https://www.ilona-andrews.com/2022/chapter-6-part-1/",
-    6.5: "https://www.ilona-andrews.com/2022/chapter-6-part-2/",
-    7.0: "https://www.ilona-andrews.com/2022/chapter-7/",
-    8.0: "https://www.ilona-andrews.com/2022/chapter-8-part-1/",
-    8.5: "https://www.ilona-andrews.com/2022/chapter-8-part-2/",
-    9.0: "https://www.ilona-andrews.com/2022/chapter-9-part-1/",
-}
 
 
 @dataclass
@@ -78,7 +62,7 @@ class Chapter:
 class Book:
     title: str
     author: str
-    cover_img_path: str = ""
+    cover_img_path: Optional[str] = ""
     language: str = "en"
     chapters: Optional[List[Chapter]] = None
     ebook: Optional[epub.EpubBook] = None
@@ -136,10 +120,9 @@ class Book:
             self.ebook.add_item(chapter.eimg)
 
 
-def main(use_cache=True):
-    title = "Innkeeper Chronicles - Sweep of the Heart"
-    author = "Ilona Andrews"
-
+def main(
+    title, author, blog_map, epub_name, cover_img_path=None, use_cache=True
+):
     chapters = []
     for key, url in blog_map.items():
         if not use_cache:
@@ -152,13 +135,13 @@ def main(use_cache=True):
     book = Book(
         title,
         author,
-        cover_img_path="images/A-dahl-cover-art-chop.jpg",
+        cover_img_path=cover_img_path,
         chapters=chapters,
     )
     book.finish_book()
 
     # save book to file
-    epub.write_epub("Sweep of the Heart.epub", book.ebook, {})
+    epub.write_epub(epub_name, book.ebook, {})
 
     pass
 
@@ -215,4 +198,4 @@ def fetch_and_save_img(src: str) -> str:
     return full_file_path
 
 
-main()
+# main()
