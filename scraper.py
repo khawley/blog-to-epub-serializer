@@ -71,6 +71,10 @@ class Scraper:
 
     @classmethod
     def fetch_page(cls, url: str, key: float) -> BeautifulSoup:
+        # confirm the directory exists, creating any intermediates required
+        if not os.path.exists(cls.SOUP_DIR):
+            os.makedirs(cls.SOUP_DIR)
+
         response = requests.get(url)
         with open(f"{cls.SOUP_DIR}/soup_{key}.html", "w") as f:
             f.write(response.text)
