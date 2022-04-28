@@ -1,7 +1,7 @@
 import io
 import os
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -120,82 +120,97 @@ class Book:
             self.ebook.add_item(chapter.eimg)
 
 
-def main(
-    title, author, blog_map, epub_name, cover_img_path=None, use_cache=True
-):
-    chapters = []
-    for key, url in blog_map.items():
-        if not use_cache:
-            soup = fetch_page(url, key)
-        else:
-            soup = read_soup_from_file(key)
-        chapter = parse_chapter_text(soup, key)
-        chapters.append(chapter)
+class Scraper:
+    def __init__(
+        self,
+        title: str,
+        author: str,
+        blog_map: Dict[float, str],
+        epub_name: str,
+        cover_img_path: Optional[str] = None,
+    ):
+        self.title = title
+        self.author = author
+        self.blog_map = blog_map
+        self.epub_name = epub_name
+        self.cover_img_path = cover_img_path
 
-    book = Book(
-        title,
-        author,
-        cover_img_path=cover_img_path,
-        chapters=chapters,
-    )
-    book.finish_book()
+    def run(self, use_cache: bool = True):
 
-    # save book to file
-    epub.write_epub(epub_name, book.ebook, {})
+        chapters = []
+        for key, url in self.blog_map.items():
+            if not use_cache:
+                soup = self.fetch_page(url, key)
+            else:
+                soup = self.read_soup_from_file(key)
+            chapter = self.parse_chapter_text(soup, key)
+            chapters.append(chapter)
 
-    pass
+        book = Book(
+            self.title,
+            self.author,
+            cover_img_path=self.cover_img_path,
+            chapters=chapters,
+        )
+        book.finish_book()
 
+        # save book to file
+        epub.write_epub(self.epub_name, book.ebook, {})
 
-def read_soup_from_file(
-    key: float,
-) -> BeautifulSoup:
-    with open(f"{SOUP_DIR}/soup_{key}.html", "r") as f:
-        soup = BeautifulSoup(f.read(), "html.parser")
-    return soup
+        pass
 
+    @staticmethod
+    def read_soup_from_file(
+        key: float,
+    ) -> BeautifulSoup:
+        with open(f"{SOUP_DIR}/soup_{key}.html", "r") as f:
+            soup = BeautifulSoup(f.read(), "html.parser")
+        return soup
 
-def fetch_page(url: str, key: float) -> BeautifulSoup:
-    response = requests.get(url)
-    with open(f"{SOUP_DIR}/soup_{key}.html", "w") as f:
-        f.write(response.text)
+    @staticmethod
+    def fetch_page(url: str, key: float) -> BeautifulSoup:
+        response = requests.get(url)
+        with open(f"{SOUP_DIR}/soup_{key}.html", "w") as f:
+            f.write(response.text)
 
-    return BeautifulSoup(response.text, "html.parser")
+        return BeautifulSoup(response.text, "html.parser")
 
+    def parse_chapter_text(
+        self, soup: BeautifulSoup, chapter_idx: float
+    ) -> Chapter:
+        article = soup.article
+        chapter_title = article.h1.text
+        chapter_content = article.find(class_="entry-content")
 
-def parse_chapter_text(soup: BeautifulSoup, chapter_idx: float) -> Chapter:
-    article = soup.article
-    chapter_title = article.h1.text
-    chapter_content = article.find(class_="entry-content")
+        img_block = chapter_content.find(class_="wp-block-image")
+        local_src = ""
+        if img_block:
+            if img_block.find("noscript"):
+                img_block.find("noscript").replace_with("")
+            img = img_block.find("img")
+            local_src = self.fetch_and_save_img(img.attrs["data-src"])
+            img.attrs["src"] = local_src
 
-    img_block = chapter_content.find(class_="wp-block-image")
-    local_src = ""
-    if img_block:
-        if img_block.find("noscript"):
-            img_block.find("noscript").replace_with("")
-        img = img_block.find("img")
-        local_src = fetch_and_save_img(img.attrs["data-src"])
-        img.attrs["src"] = local_src
+        # ignore the Typo box
+        ignore_typo_div = "wp-block-genesis-blocks-gb-container"
+        if chapter_content.find(class_=ignore_typo_div):
+            chapter_content.find(class_=ignore_typo_div).replace_with("")
+        return Chapter(
+            idx=chapter_idx,
+            title=chapter_title,
+            html_content=chapter_content,
+            image_path=local_src,
+        )
 
-    # ignore the Typo box
-    ignore_typo_div = "wp-block-genesis-blocks-gb-container"
-    if chapter_content.find(class_=ignore_typo_div):
-        chapter_content.find(class_=ignore_typo_div).replace_with("")
-    return Chapter(
-        idx=chapter_idx,
-        title=chapter_title,
-        html_content=chapter_content,
-        image_path=local_src,
-    )
-
-
-def fetch_and_save_img(src: str) -> str:
-    filename = src.split("/")[-1]
-    full_file_path = f"{IMAGES_DIR}/{filename}"
-    if not os.path.isfile(full_file_path):
-        file = requests.get(src)
-        with open(full_file_path, "wb") as f:
-            f.write(file.content)
-    return full_file_path
+    @staticmethod
+    def fetch_and_save_img(src: str) -> str:
+        filename = src.split("/")[-1]
+        full_file_path = f"{IMAGES_DIR}/{filename}"
+        if not os.path.isfile(full_file_path):
+            file = requests.get(src)
+            with open(full_file_path, "wb") as f:
+                f.write(file.content)
+        return full_file_path
 
 
 # main()

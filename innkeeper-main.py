@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from scraper import main
+from scraper import Scraper
 
 blog_map: Dict[float, str] = {
     1.0: "https://www.ilona-andrews.com/2021/happy-holidays-4/",
@@ -26,10 +26,12 @@ author = "Ilona Andrews"
 cover_img_path = "images/A-dahl-cover-art-chop.jpg"
 epub_name = "Sweep of the Heart.epub"
 
-main(
+scraper = Scraper(
     title=title,
     author=author,
     cover_img_path=cover_img_path,
     blog_map=blog_map,
     epub_name=epub_name,
 )
+
+scraper.run()
