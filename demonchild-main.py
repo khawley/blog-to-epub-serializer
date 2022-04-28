@@ -71,10 +71,6 @@ class TwelveKingdomsScraper(Scraper):
 
     # new methods just for this class
     def add_copyright(self) -> Optional[Chapter]:
-        cover_2 = self.fetch_and_save_img(
-            "https://lh6.googleusercontent.com/_4ORonPYBrqQ/Tb-vb19znYI/AAAAAAAAAGM/8UIPeIt4WUA/s800/jkcover02b.jpg"
-        )
-        local_srcs = [cover_2]
         style = """
         <style>
                 html, body, div, p {
@@ -169,10 +165,6 @@ class TwelveKingdomsScraper(Scraper):
             information about the Twelve Kingdoms series.
           </div>
         </div>
-        <div>
-            <h2>Cover of Volume 2</h2>
-            <img src="{cover_2}" alt="Cover2"/>
-        </div>
         </body>
         </html>
         """
@@ -180,7 +172,6 @@ class TwelveKingdomsScraper(Scraper):
             idx=0.1,
             title="",
             html_content=chapter_content,
-            image_paths=local_srcs,
         )
 
 
