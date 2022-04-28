@@ -1,5 +1,39 @@
-from typing import Dict, List, Optional
+from typing import Dict
+
+from bs4 import BeautifulSoup
+
+from book_utils import Chapter
 from scraper import Scraper
+
+
+class InnkeeperScraper(Scraper):
+    def parse_chapter_text(
+        self, soup: BeautifulSoup, chapter_idx: float
+    ) -> Chapter:
+        article = soup.article
+        chapter_title = article.h1.text
+        chapter_content = article.find(class_="entry-content")
+
+        img_block = chapter_content.find(class_="wp-block-image")
+        local_src = ""
+        if img_block:
+            if img_block.find("noscript"):
+                img_block.find("noscript").replace_with("")
+            img = img_block.find("img")
+            local_src = self.fetch_and_save_img(img.attrs["data-src"])
+            img.attrs["src"] = local_src
+
+        # ignore the Typo box
+        ignore_typo_div = "wp-block-genesis-blocks-gb-container"
+        if chapter_content.find(class_=ignore_typo_div):
+            chapter_content.find(class_=ignore_typo_div).replace_with("")
+        return Chapter(
+            idx=chapter_idx,
+            title=chapter_title,
+            html_content=chapter_content,
+            image_path=local_src,
+        )
+
 
 blog_map: Dict[float, str] = {
     1.0: "https://www.ilona-andrews.com/2021/happy-holidays-4/",
@@ -26,7 +60,7 @@ author = "Ilona Andrews"
 cover_img_path = "images/A-dahl-cover-art-chop.jpg"
 epub_name = "Sweep of the Heart.epub"
 
-scraper = Scraper(
+scraper = InnkeeperScraper(
     title=title,
     author=author,
     cover_img_path=cover_img_path,
