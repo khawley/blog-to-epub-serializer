@@ -1,5 +1,5 @@
+import logging
 import os
-from logging import getLogger
 from typing import Dict, Optional
 
 import requests
@@ -8,7 +8,22 @@ from ebooklib import epub
 
 from book_utils import Chapter, Book
 
-logger = getLogger("__main__")
+logger = logging.getLogger("__main__")
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
 
 
 class Scraper:
@@ -32,10 +47,12 @@ class Scraper:
     def run(self, use_cache: bool = True):
         chapters = []
         for key, url in self.blog_map.items():
+            logger.info(f"Processing {key} at url {url}")
             soup = None
             if use_cache:
                 try:
                     soup = self.read_soup_from_file(key)
+                    logger.info(f"Loaded cached file for {key}")
                 except FileNotFoundError:
                     # if local file not found, then look for
                     logger.warning(
@@ -74,6 +91,7 @@ class Scraper:
         # confirm the directory exists, creating any intermediates required
         if not os.path.exists(cls.SOUP_DIR):
             os.makedirs(cls.SOUP_DIR)
+            logger.info(f"Created directory path {cls.SOUP_DIR}")
 
         response = requests.get(url)
         with open(f"{cls.SOUP_DIR}/soup_{key}.html", "w") as f:
@@ -96,6 +114,7 @@ class Scraper:
         # confirm the directory exists, creating any intermediates required
         if not os.path.exists(directory):
             os.makedirs(directory)
+            logger.info(f"Created directory path {directory}")
 
         filename = src.split("/")[-1]
         full_file_path = f"{directory}/{filename}"
