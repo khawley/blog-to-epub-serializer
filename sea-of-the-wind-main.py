@@ -6,8 +6,8 @@ from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
-from book_utils import Chapter
-from scraper import Scraper
+from blog_to_epub_serializer.book_utils import Chapter
+from blog_to_epub_serializer.scraper import Scraper
 
 
 class SeaOftheWindScraper(Scraper):

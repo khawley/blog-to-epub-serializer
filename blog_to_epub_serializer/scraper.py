@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from ebooklib import epub
 
-from book_utils import Chapter, Book
+from blog_to_epub_serializer.book_utils import Chapter, Book
 
 logger = logging.getLogger("__main__")
 
@@ -27,8 +27,8 @@ logger.addHandler(ch)
 
 
 class Scraper:
-    IMAGES_DIR = "images"
-    SOUP_DIR = "soups"
+    IMAGES_DIR = "../images"
+    SOUP_DIR = "../soups"
 
     def __init__(
         self,
