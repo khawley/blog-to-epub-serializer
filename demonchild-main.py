@@ -158,7 +158,7 @@ class TwelveKingdomsScraper(Scraper):
                 by Fuyumi Ono. Translated by Mina. The numbers at
                 the beginning of each chapter reflect the original part/chapter
                 numbering in the Kodansha Paperbacks edition
-                (ISBN: 978-4-06-255114-4/978-4-06-255120-5).<br />
+                (ISBN: 978-4-10-124021-3).<br />
             <br />
             Visit <a class="home" href="https://tu-shu-guan.blogspot.com">
             tu-shu-guan.blogspot.com</a> for the source version and more
