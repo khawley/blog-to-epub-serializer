@@ -1,9 +1,10 @@
 import io
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import List, Optional, Union
 
 from PIL import Image
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from ebooklib import epub
 
 
@@ -11,7 +12,7 @@ from ebooklib import epub
 class Chapter:
     idx: float
     title: str
-    html_content: BeautifulSoup
+    html_content: Union[BeautifulSoup, Tag, str]
     image_paths: Optional[List[str]] = None
     echapter: Optional[epub.EpubHtml] = None
     eimgs: Optional[List[epub.EpubItem]] = None

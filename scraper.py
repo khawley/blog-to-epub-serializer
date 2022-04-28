@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -46,6 +46,9 @@ class Scraper:
 
     def run(self, use_cache: bool = True):
         chapters = []
+        preface_chapters = self.add_preface_chapters()
+        if preface_chapters:
+            chapters = preface_chapters
         for key, url in self.blog_map.items():
             logger.info(f"Processing {key} at url {url}")
             soup = None
@@ -103,6 +106,12 @@ class Scraper:
         self, soup: BeautifulSoup, chapter_idx: float
     ) -> Chapter:
         raise NotImplementedError()
+
+    def add_preface_chapters(self) -> Optional[List[Chapter]]:
+        """
+        An optional method to add image based chapters to the book.
+        Should be implemented in subclasses and return a Chapter
+        """
 
     @classmethod
     def fetch_and_save_img(cls, src: str, key: Optional[float] = None) -> str:
