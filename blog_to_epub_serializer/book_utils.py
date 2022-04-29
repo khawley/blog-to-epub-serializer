@@ -15,6 +15,7 @@ class Chapter:
     html_content: Union[BeautifulSoup, Tag, str]
     image_paths: Optional[List[str]] = None
     no_title_header: bool = False
+    add_to_table_of_contents: bool = True
 
     # should not be set by the user directly
     _echapter: Optional[epub.EpubHtml] = None
@@ -211,7 +212,8 @@ class Book:
         """
         self.ebook.add_item(chapter.echapter)
         self.ebook.spine.append(chapter.echapter)
-        self.ebook.toc.append(chapter.echapter)
+        if chapter.add_to_table_of_contents:
+            self.ebook.toc.append(chapter.echapter)
 
         for ch_eimg in chapter.eimgs:
             self.ebook.add_item(ch_eimg)
