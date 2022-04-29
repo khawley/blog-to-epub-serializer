@@ -26,8 +26,7 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-REPO_BASE = Path(__file__).resolve().parent.parent
-LOCAL_CACHE = f"{REPO_BASE}/local_cache"
+LOCAL_CACHE = f"local_cache"
 
 
 class Scraper:
