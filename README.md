@@ -29,13 +29,13 @@ virtualenv -p python3 venv
 Then activate the enviroment anytime you wish to work on the project.
 
 ```bash
-./venv/bin/activate
+. venv/bin/activate
 ```
 
 Install the dependencies.
 ```bash
-pip install -i requirements.txt
-pip install -i requirements-dev.txt
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ## Write your own Serializer
