@@ -14,9 +14,11 @@ class Chapter:
     title: str
     html_content: Union[BeautifulSoup, Tag, str]
     image_paths: Optional[List[str]] = None
-    echapter: Optional[epub.EpubHtml] = None
-    eimgs: Optional[List[epub.EpubItem]] = None
     no_title_header: bool = False
+
+    # should not be set by the user directly
+    _echapter: Optional[epub.EpubHtml] = None
+    _eimgs: Optional[List[epub.EpubItem]] = None
 
     def __post_init__(self):
         """
@@ -24,10 +26,18 @@ class Chapter:
         used in the Book
         """
         self._create_echapter()
-        self.eimgs = []
+        self._eimgs = []
         if self.image_paths:
             for image_path in self.image_paths:
                 self._create_eimg(image_path)
+
+    @property
+    def echapter(self) -> Optional[epub.EpubHtml]:
+        return self._echapter
+
+    @property
+    def eimgs(self) -> Optional[epub.EpubItem]:
+        return self._eimgs
 
     @property
     def xhtml(self) -> str:
@@ -57,7 +67,7 @@ class Chapter:
             ch.content = f"<div>{self.html_content}</div>"
         else:
             ch.content = f"<h1>{self.title}</h1>{self.html_content}"
-        self.echapter = ch
+        self._echapter = ch
 
     def _create_eimg(self, image_path: str) -> None:
         """
@@ -76,7 +86,7 @@ class Chapter:
             if "/" in image_path
             else image_path.split(".")[0]
         )
-        self.eimgs.append(
+        self._eimgs.append(
             epub.EpubItem(
                 uid=uid,
                 file_name=image_path,
@@ -93,7 +103,9 @@ class Book:
     cover_img_path: Optional[str] = ""
     language: str = "en"
     chapters: Optional[List[Chapter]] = None
-    ebook: Optional[epub.EpubBook] = None
+
+    # should not be set by the user directly
+    _ebook: Optional[epub.EpubBook] = None
 
     def __post_init__(self) -> None:
         """
@@ -104,6 +116,10 @@ class Book:
         if self.chapters:
             for chapter in self.chapters:
                 self._add_chapter_to_ebook(chapter)
+
+    @property
+    def ebook(self) -> Optional[epub.EpubBook]:
+        return self._ebook
 
     def _create_ebook(self) -> None:
         """
@@ -122,7 +138,7 @@ class Book:
             ebook.spine.append("cover")
         ebook.spine.append("nav")
         ebook.toc = []
-        self.ebook = ebook
+        self._ebook = ebook
 
     def finish_book(self):
         # add default NCX and Nav file
