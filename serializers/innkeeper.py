@@ -3,11 +3,11 @@ from typing import Dict
 from bs4 import BeautifulSoup
 
 from blog_to_epub_serializer.book_utils import Chapter
-from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
+from blog_to_epub_serializer.scraper import Scraper, LOCAL_CACHE
 
 
 class InnkeeperScraper(Scraper):
-    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache/innkeeper"
+    SCRAPER_CACHE = f"{LOCAL_CACHE}/innkeeper"
 
     def parse_chapter_text(
         self, soup: BeautifulSoup, chapter_idx: float

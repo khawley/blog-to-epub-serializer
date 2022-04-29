@@ -27,11 +27,12 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 REPO_BASE = Path(__file__).resolve().parent.parent
+LOCAL_CACHE = f"{REPO_BASE}/local_cache"
 
 
 class Scraper:
     # directories in relation to repo base
-    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache"
+    SCRAPER_CACHE = LOCAL_CACHE
 
     def __init__(
         self,
@@ -93,7 +94,7 @@ class Scraper:
         book.finish_book()
 
         # save book to file
-        epub.write_epub(self.epub_name, book.ebook, {})
+        epub.write_epub(f"{LOCAL_CACHE}/{self.epub_name}", book.ebook, {})
 
         pass
 
@@ -108,7 +109,7 @@ class Scraper:
         :param key: the chapter number page to retrieve
         :return: html/beautifulsoup loaded page
         """
-        with open(f"{cls.LOCAL_CACHE_DIR}/soup_{key}.html", "r") as f:
+        with open(f"{cls.SCRAPER_CACHE}/soup_{key}.html", "r") as f:
             soup = BeautifulSoup(f.read(), "html.parser")
         return soup
 
@@ -122,12 +123,12 @@ class Scraper:
         :return: html/beautifulsoup loaded page
         """
         # confirm the directory exists, creating any intermediates required
-        if not os.path.exists(cls.LOCAL_CACHE_DIR):
-            os.makedirs(cls.LOCAL_CACHE_DIR)
-            logger.info(f"Created directory path {cls.LOCAL_CACHE_DIR}")
+        if not os.path.exists(cls.SCRAPER_CACHE):
+            os.makedirs(cls.SCRAPER_CACHE)
+            logger.info(f"Created directory path {cls.SCRAPER_CACHE}")
 
         response = requests.get(url)
-        with open(f"{cls.LOCAL_CACHE_DIR}/soup_{key}.html", "w") as f:
+        with open(f"{cls.SCRAPER_CACHE}/soup_{key}.html", "w") as f:
             f.write(response.text)
 
         return BeautifulSoup(response.text, "html.parser")
@@ -164,7 +165,7 @@ class Scraper:
         :return: the local path the image was downloaded to
         """
         # determine the full directory path, if supplied a key
-        directory = cls.LOCAL_CACHE_DIR
+        directory = cls.SCRAPER_CACHE
         if key:
             directory = f"{directory}/{key}"
 

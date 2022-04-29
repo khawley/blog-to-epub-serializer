@@ -7,11 +7,11 @@ from typing import Dict, List, Optional
 from bs4 import BeautifulSoup
 
 from blog_to_epub_serializer.book_utils import Chapter
-from blog_to_epub_serializer.scraper import Scraper, REPO_BASE
+from blog_to_epub_serializer.scraper import Scraper, LOCAL_CACHE
 
 
 class SeaOftheWindScraper(Scraper):
-    LOCAL_CACHE_DIR = f"{REPO_BASE}/local_cache/seaofthewind"
+    SCRAPER_CACHE = f"{LOCAL_CACHE}/seaofthewind"
 
     # override parent functions
     def parse_chapter_text(
