@@ -217,3 +217,15 @@ class MyScraper(Scraper):
         )
         return [map1_chapter, map2_chapter]
 ```
+
+## Run your Serializer
+
+The resources are written with the assumption that you are invoking the script
+from the repo base.  To run some of the committed serializers:
+
+```bash
+# from Repo Base
+
+# activate/switch into your virtualenv and run:
+python serializers/innkeeper.py
+```
