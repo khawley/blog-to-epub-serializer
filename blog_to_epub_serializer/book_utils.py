@@ -126,19 +126,50 @@ class Book:
         Sets up the basic metadata of the book. Including the title, author
         and cover. It also creates an empty (to be filled) table of contents.
         """
-        ebook = epub.EpubBook()
-        ebook.set_title(self.title)
-        ebook.set_language(self.language)
-        ebook.add_author(self.author)
-        ebook.spine = []
+        self._ebook = epub.EpubBook()
+        self._ebook.set_title(self.title)
+        self._ebook.set_language(self.language)
+        self._ebook.add_author(self.author)
+        self._ebook.spine = []
         if self.cover_img_path:
-            ebook.set_cover(
-                "image.jpg", open(self.cover_img_path, "rb").read()
-            )
-            ebook.spine.append("cover")
-        ebook.spine.append("nav")
-        ebook.toc = []
-        self._ebook = ebook
+            self._add_cover()
+        self._ebook.spine.append("nav")
+        self._ebook.toc = []
+
+    def _add_cover(self):
+        # sets the cover when closed/on hover
+        self._ebook.set_cover(
+            "image.jpg",
+            open(self.cover_img_path, "rb").read(),
+            # setting to False here to manually add the page
+            create_page=False,
+        )
+
+        # create the cover html manually, so we can change the linear value
+        cover_html = epub.EpubCoverHtml(
+            image_name=self.cover_img_path,
+        )
+        # this is a bug (in my opinion) in the source library
+        # when set to the default False, the cover ends up as the
+        # last page of the book
+        cover_html.is_linear = True
+
+        # and then manually add the image for the html page
+        raw_img = Image.open(self.cover_img_path)
+        b = io.BytesIO()
+        raw_img.save(b, "jpeg")
+        bin_img = b.getvalue()
+        img_item = epub.EpubItem(
+            uid="cover_image",
+            file_name=self.cover_img_path,
+            media_type="image/jpeg",
+            content=bin_img,
+        )
+
+        # finally add them to the book and the cover page to the spine
+        self._ebook.add_item(cover_html)
+        self._ebook.add_item(img_item)
+        self._ebook.spine.append("cover")
 
     def finish_book(self):
         # add default NCX and Nav file
