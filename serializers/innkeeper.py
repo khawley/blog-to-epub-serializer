@@ -62,9 +62,7 @@ blog_map: Dict[float, str] = {
 
 title = "Innkeeper Chronicles - Sweep of the Heart"
 author = "Ilona Andrews"
-cover_img_path = (
-    f"{REPO_BASE}/local_cache/images/innkeeper/A-dahl-cover-art-chop.jpg"
-)
+cover_img_path = f"{LOCAL_CACHE}/innkeeper/A-dahl-cover-art-chop.jpg"
 epub_name = "Sweep of the Heart.epub"
 
 scraper = InnkeeperScraper(
