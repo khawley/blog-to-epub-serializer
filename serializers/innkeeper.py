@@ -69,6 +69,8 @@ blog_map: Dict[float, str] = {
     18.5: "https://www.ilona-andrews.com/2022/chapter-18-part-2/",
     19.0: "https://www.ilona-andrews.com/2022/chapter-19-part-1/",
     19.5: "https://www.ilona-andrews.com/2022/chapter-19-2-and-3/",
+    20.0: "https://www.ilona-andrews.com/2022/chapter-20-part-1/",
+    20.5: "https://www.ilona-andrews.com/2022/chapter-20-part-2/",
 }
 
 title = "Innkeeper Chronicles - Sweep of the Heart"
